@@ -1,0 +1,46 @@
+name: CI Mercurio Cluster - Destroy
+
+on:
+  workflow_dispatch:
+    inputs:
+      resource:
+        description: 'Recurso'
+        required: true
+        default: 'all' 
+        type: choice
+        options:
+          - all
+          - ec2
+          - security-groups
+
+jobs:
+  destroying:
+    name: Destroying infrastructure
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+      - uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.FNZINFRASTRUCTURE_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.FNZINFRASTRUCTURE_AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-2
+
+      - name: Executing Destroying Resources
+        run: |
+          set +e
+          
+          cd ./aws
+
+          aws s3 sync s3://versioning.finanzero.com.br/terraform/mercurio-cluster .
+
+          curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
+          sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
+          sudo apt-get update && sudo apt-get install terraform
+
+          terraform init
+          terraform destroy -auto-approve
+
+          aws s3 cp terraform.tfstate s3://versioning.finanzero.com.br/terraform/mercurio-cluster/terraform.tfstate
+          aws s3 cp terraform.tfstate.backup s3://versioning.finanzero.com.br/terraform/mercurio-cluster/terraform.tfstate.backup
+          
