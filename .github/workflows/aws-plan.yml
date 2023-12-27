@@ -25,7 +25,7 @@ jobs:
           
           cd ./aws
 
-          aws s3 sync s3://versioning.finanzero.com.br/terraform/mercurio-cluster .
+          aws s3 sync s3://{s3-address} .
 
           curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
           sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
@@ -34,6 +34,6 @@ jobs:
           terraform init
           terraform plan
 
-          aws s3 cp terraform.tfstate s3://versioning.finanzero.com.br/terraform/mercurio-cluster/terraform.tfstate
-          aws s3 cp terraform.tfstate.backup s3://versioning.finanzero.com.br/terraform/mercurio-cluster/terraform.tfstate.backup
+          aws s3 cp terraform.tfstate s3://{s3-address}/terraform.tfstate
+          aws s3 cp terraform.tfstate.backup s3://{s3-address}/terraform.tfstate.backup
           

@@ -22,8 +22,8 @@ jobs:
       - uses: actions/checkout@v1
       - uses: aws-actions/configure-aws-credentials@v1
         with:
-          aws-access-key-id: ${{ secrets.FNZINFRASTRUCTURE_AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.FNZINFRASTRUCTURE_AWS_SECRET_ACCESS_KEY }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-2
 
       - name: Executing Destroying Resources
@@ -32,7 +32,7 @@ jobs:
           
           cd ./aws
 
-          aws s3 sync s3://versioning.finanzero.com.br/terraform/mercurio-cluster .
+          aws s3 sync s3://{s3-address} .
 
           curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
           sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
@@ -41,6 +41,6 @@ jobs:
           terraform init
           terraform destroy -auto-approve
 
-          aws s3 cp terraform.tfstate s3://versioning.finanzero.com.br/terraform/mercurio-cluster/terraform.tfstate
-          aws s3 cp terraform.tfstate.backup s3://versioning.finanzero.com.br/terraform/mercurio-cluster/terraform.tfstate.backup
+          aws s3 cp terraform.tfstate s3://{s3-address}/terraform.tfstate
+          aws s3 cp terraform.tfstate.backup s3://{s3-address}/terraform.tfstate.backup
           
