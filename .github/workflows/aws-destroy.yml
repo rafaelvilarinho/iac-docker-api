@@ -1,4 +1,4 @@
-name: CI Mercurio Cluster - Destroy
+name: CI Terraform - Destroy
 
 on:
   workflow_dispatch:
